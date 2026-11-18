@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#123a7a">
+<title>国家安全知识小测</title>
+<style>
+  :root {
+    --bg: #eef2f9;
+    --card: #ffffff;
+    --ink: #16233c;
+    --muted: #6b7891;
+    --line: #e2e8f3;
+    --primary: #1d4ed8;
+    --primary-soft: #e8efff;
+    --ok: #15803d;
+    --ok-soft: #e8f7ee;
+    --bad: #c62828;
+    --bad-soft: #fdeceb;
+    --shadow: 0 10px 30px rgba(22, 35, 60, .08);
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    background:
+      radial-gradient(1100px 520px at 50% -180px, #dfe8ff 0%, rgba(223, 232, 255, 0) 65%),
+      var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+      "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 22px 18px calc(24px + env(safe-area-inset-bottom));
+  }
+
+  .screen { display: none; }
+  .screen.active { display: block; animation: enter .26s ease both; }
+
+  @keyframes enter {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .screen.active { animation: none; }
+  }
+
+  /* ---------- 首页 ---------- */
+  .hero {
+    background: linear-gradient(150deg, #14336b 0%, #1d4ed8 100%);
+    color: #fff;
+    border-radius: 22px;
+    padding: 30px 24px 26px;
+    box-shadow: 0 14px 34px rgba(29, 78, 216, .28);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::after {
+    content: "";
+    position: absolute;
+    right: -60px;
+    top: -70px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .1);
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: .12em;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .16);
+    margin-bottom: 14px;
+  }
+
+  .hero h1 {
+    margin: 0;
+    font-size: 26px;
+    line-height: 1.35;
+    font-weight: 700;
+    letter-spacing: .01em;
+  }
+
+  .hero p {
+    margin: 10px 0 0;
+    font-size: 14px;
+    color: rgba(255, 255, 255, .82);
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 18px 0 22px;
+  }
+
+  .fact {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 14px 8px;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+
+  .fact b {
+    display: block;
+    font-size: 20px;
+    color: var(--primary);
+    line-height: 1.2;
+  }
+
+  .fact span { font-size: 12px; color: var(--muted); }
+
+  .tips {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 16px 18px;
+    box-shadow: var(--shadow);
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .tips strong { color: var(--ink); }
+  .tips ul { margin: 8px 0 0; padding-left: 18px; }
+  .tips li { margin: 4px 0; }
+
+  .btn {
+    display: block;
+    width: 100%;
+    border: 0;
+    border-radius: 14px;
+    padding: 15px 18px;
+    font-size: 17px;
+    font-weight: 600;
+    font-family: inherit;
+    color: #fff;
+    background: linear-gradient(135deg, #1d4ed8, #2563eb);
+    box-shadow: 0 10px 22px rgba(29, 78, 216, .26);
+    cursor: pointer;
+    transition: transform .12s ease, opacity .15s ease, background .2s ease;
+  }
+
+  .btn:active { transform: scale(.985); }
+
+  .btn[disabled] {
+    background: #cdd6e6;
+    color: #fff;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+
+  .btn.ghost {
+    background: transparent;
+    color: var(--primary);
+    border: 1px solid #c9d8f8;
+    box-shadow: none;
+  }
+
+  .home-action { margin-top: 20px; }
+
+  /* ---------- 答题页 ---------- */
+  .quiz-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .quiz-head .count {
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: .02em;
+  }
+
+  .quiz-head .count b {
+    color: var(--primary);
+    font-size: 17px;
+    margin-right: 2px;
+  }
+
+  .back-link {
+    border: 0;
+    background: none;
+    color: var(--muted);
+    font-size: 13px;
+    font-family: inherit;
+    padding: 6px 2px;
+    cursor: pointer;
+  }
+
+  .progress {
+    height: 6px;
+    border-radius: 999px;
+    background: #dde5f2;
+    overflow: hidden;
+    margin-bottom: 18px;
+  }
+
+  .progress i {
+    display: block;
+    height: 100%;
+    width: 0;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #1d4ed8, #60a5fa);
+    transition: width .28s ease;
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 22px 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .q-no {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    color: var(--primary);
+    margin-bottom: 6px;
+  }
+
+  .q-text {
+    margin: 0 0 18px;
+    font-size: 18px;
+    line-height: 1.55;
+    font-weight: 600;
+  }
+
+  .options { display: grid; gap: 10px; }
+
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+    text-align: left;
+    font-family: inherit;
+    font-size: 15.5px;
+    line-height: 1.5;
+    color: var(--ink);
+    background: #f7f9fd;
+    border: 1.5px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 14px;
+    min-height: 54px;
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease, transform .1s ease;
+  }
+
+  .option:active { transform: scale(.99); }
+
+  .option .key {
+    flex: 0 0 26px;
+    height: 26px;
+    border-radius: 8px;
+    background: #e5ebf6;
+    color: #56627a;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s ease, color .15s ease;
+  }
+
+  .option .text { padding-top: 1px; }
+
+  .option.selected {
+    border-color: var(--primary);
+    background: var(--primary-soft);
+  }
+
+  .option.selected .key {
+    background: var(--primary);
+    color: #fff;
+  }
+
+  .quiz-action { margin-top: 20px; }
+
+  /* ---------- 结果页 ---------- */
+  .score-card {
+    background: var(--card);
+    border-radius: 22px;
+    padding: 26px 20px 22px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+  }
+
+  .score-label {
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: .08em;
+  }
+
+  .score-num {
+    font-size: 56px;
+    line-height: 1.1;
+    font-weight: 800;
+    color: var(--primary);
+    margin: 6px 0 2px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .score-num small {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-left: 2px;
+  }
+
+  .score-msg {
+    margin: 6px 0 0;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .score-sub {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .review-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: .04em;
+    margin: 0 0 10px 4px;
+  }
+
+  .review { display: grid; gap: 10px; }
+
+  .review-item {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 15px 16px;
+    border-left: 4px solid var(--ok);
+    box-shadow: 0 6px 18px rgba(22, 35, 60, .05);
+  }
+
+  .review-item.wrong { border-left-color: var(--bad); }
+
+  .review-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .review-top .mark {
+    margin-left: auto;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--ok-soft);
+    color: var(--ok);
+  }
+
+  .review-item.wrong .mark {
+    background: var(--bad-soft);
+    color: var(--bad);
+  }
+
+  .review-q {
+    margin: 0 0 8px;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .review-line {
+    margin: 3px 0;
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+
+  .review-line b { color: var(--ink); font-weight: 600; }
+  .review-item.wrong .review-line b.bad { color: var(--bad); }
+  .review-line b.ok { color: var(--ok); }
+
+  .result-actions {
+    display: grid;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .footnote {
+    margin-top: 18px;
+    text-align: center;
+    font-size: 12px;
+    color: #93a0b7;
+    line-height: 1.7;
+  }
+</style>
+</head>
+<body>
+<main class="app">
+
+  <!-- 首页 -->
+  <section class="screen active" id="screen-intro">
+    <div class="hero">
+      <span class="badge">国家安全教育</span>
+      <h1>国家安全知识小测</h1>
+      <p>8 道题，每题一页，选出你认为正确的选项。</p>
+    </div>
+
+    <div class="facts">
+      <div class="fact"><b>8</b><span>题目</span></div>
+      <div class="fact"><b>约 3</b><span>分钟</span></div>
+      <div class="fact"><b>12339</b><span>举报电话</span></div>
+    </div>
+
+    <div class="tips">
+      <strong>答题说明</strong>
+      <ul>
+        <li>点击选项即可选中，选完点“下一题”。</li>
+        <li>提交后立即显示答对数量与逐题解析。</li>
+        <li>问卷不收集姓名、学号等个人信息。</li>
+      </ul>
+    </div>
+
+    <div class="home-action">
+      <button class="btn" id="startBtn" type="button">开始答题</button>
+    </div>
+  </section>
+
+  <!-- 答题页 -->
+  <section class="screen" id="screen-quiz">
+    <div class="quiz-head">
+      <span class="count"><b id="curNo">1</b>/ <span id="totalNo">8</span> 题</span>
+      <button class="back-link" id="backBtn" type="button">上一题</button>
+    </div>
+    <div class="progress"><i id="progressBar"></i></div>
+
+    <div class="card">
+      <div class="q-no" id="qNo">QUESTION 01</div>
+      <h2 class="q-text" id="qText"></h2>
+      <div class="options" id="options"></div>
+    </div>
+
+    <div class="quiz-action">
+      <button class="btn" id="nextBtn" type="button" disabled>下一题</button>
+    </div>
+  </section>
+
+  <!-- 结果页 -->
+  <section class="screen" id="screen-result">
+    <div class="score-card">
+      <div class="score-label">本次得分</div>
+      <div class="score-num"><span id="scoreNum">0</span><small>/ 8 题</small></div>
+      <p class="score-msg" id="scoreMsg"></p>
+      <p class="score-sub" id="scoreSub"></p>
+    </div>
+
+    <p class="review-title">逐题回顾</p>
+    <div class="review" id="review"></div>
+
+    <div class="result-actions">
+      <button class="btn ghost" id="againBtn" type="button">再答一次</button>
+    </div>
+
+    <p class="footnote">发现危害国家安全的情况，请拨打 12339 举报。<br>本问卷仅用于宣传教育，不计入任何考核。</p>
+  </section>
+
+</main>
+
+<script>
+(function () {
+  var QUESTIONS = [
+    {
+      q: 'QQ 群有人以“学术问卷”名义收集你校军训地点、营区照片，应？',
+      options: ['一条 200 元，做了', '先做几次看看', '拒绝并拨 12339', '叫室友一起做'],
+      answer: 2
+    },
+    {
+      q: '关于免费公共 WiFi，安全做法是？',
+      options: ['连上登网银', '连上刷朋友圈', '敏感操作用自己流量', '无所谓'],
+      answer: 2
+    },
+    {
+      q: '快递盒面单应如何处理？',
+      options: ['直接扔', '涂销姓名电话地址后再扔', '留给回收员', '拍照发朋友圈'],
+      answer: 1
+    },
+    {
+      q: '在 GitHub 上传课程项目，最稳妥的是？',
+      options: ['整个目录直接 push', '配 .gitignore、确认无敏感数据再 push', '写导师邮箱', '数据集一起传'],
+      answer: 1
+    },
+    {
+      q: '12339 是什么电话？',
+      options: ['外卖投诉', '国家安全机关受理举报电话', '电信诈骗', '快递投诉'],
+      answer: 1
+    },
+    {
+      q: '境外人员以“美女博主”加你并逐步索要资料，应？',
+      options: ['恋爱脑上头', '觉得有趣继续聊', '提高警惕、保留证据、及时举报', '截图发朋友圈吐槽'],
+      answer: 2
+    },
+    {
+      q: '关于军事管理区拍照，正确的是？',
+      options: ['不发朋友圈就没事', '拍了发小红书', '不擅自进入、不拍摄、不传播', '拍给家人看'],
+      answer: 2
+    },
+    {
+      q: '下列哪项可能危害国家安全？',
+      options: ['教室讨论作业', '把实验室未发表数据集公开上传', '参加学校国安讲座', '按规定保管学生证'],
+      answer: 1
+    }
+  ];
+
+  var LETTERS = ['A', 'B', 'C', 'D'];
+  var state = {
+    index: 0,
+    answers: new Array(QUESTIONS.length).fill(null)
+  };
+
+  var screens = {
+    intro: document.getElementById('screen-intro'),
+    quiz: document.getElementById('screen-quiz'),
+    result: document.getElementById('screen-result')
+  };
+
+  var el = {
+    startBtn: document.getElementById('startBtn'),
+    againBtn: document.getElementById('againBtn'),
+    backBtn: document.getElementById('backBtn'),
+    nextBtn: document.getElementById('nextBtn'),
+    curNo: document.getElementById('curNo'),
+    totalNo: document.getElementById('totalNo'),
+    progressBar: document.getElementById('progressBar'),
+    qNo: document.getElementById('qNo'),
+    qText: document.getElementById('qText'),
+    options: document.getElementById('options'),
+    scoreNum: document.getElementById('scoreNum'),
+    scoreMsg: document.getElementById('scoreMsg'),
+    scoreSub: document.getElementById('scoreSub'),
+    review: document.getElementById('review')
+  };
+
+  function showScreen(name) {
+    Object.keys(screens).forEach(function (key) {
+      screens[key].classList.toggle('active', key === name);
+    });
+    window.scrollTo(0, 0);
+  }
+
+  function renderQuestion() {
+    var i = state.index;
+    var item = QUESTIONS[i];
+    var picked = state.answers[i];
+
+    el.curNo.textContent = String(i + 1);
+    el.totalNo.textContent = String(QUESTIONS.length);
+    el.progressBar.style.width = ((i + 1) / QUESTIONS.length * 100) + '%';
+    el.qNo.textContent = 'QUESTION ' + String(i + 1).padStart(2, '0');
+    el.qText.textContent = item.q;
+    el.backBtn.style.visibility = i === 0 ? 'hidden' : 'visible';
+
+    el.options.innerHTML = '';
+    item.options.forEach(function (text, idx) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'option' + (picked === idx ? ' selected' : '');
+      btn.setAttribute('aria-pressed', picked === idx ? 'true' : 'false');
+      btn.dataset.index = String(idx);
+
+      var key = document.createElement('span');
+      key.className = 'key';
+      key.textContent = LETTERS[idx];
+
+      var label = document.createElement('span');
+      label.className = 'text';
+      label.textContent = text;
+
+      btn.appendChild(key);
+      btn.appendChild(label);
+      el.options.appendChild(btn);
+    });
+
+    el.nextBtn.textContent = i === QUESTIONS.length - 1 ? '提交答卷' : '下一题';
+    el.nextBtn.disabled = picked === null;
+  }
+
+  el.options.addEventListener('click', function (e) {
+    var btn = e.target.closest('.option');
+    if (!btn) return;
+
+    var i = state.index;
+    state.answers[i] = Number(btn.dataset.index);
+
+    Array.prototype.forEach.call(el.options.children, function (node) {
+      node.classList.remove('selected');
+      node.setAttribute('aria-pressed', 'false');
+    });
+    btn.classList.add('selected');
+    btn.setAttribute('aria-pressed', 'true');
+
+    el.nextBtn.disabled = false;
+  });
+
+  el.startBtn.addEventListener('click', function () {
+    state.index = 0;
+    state.answers = new Array(QUESTIONS.length).fill(null);
+    renderQuestion();
+    showScreen('quiz');
+  });
+
+  el.backBtn.addEventListener('click', function () {
+    if (state.index > 0) {
+      state.index -= 1;
+      renderQuestion();
+      window.scrollTo(0, 0);
+    }
+  });
+
+  el.nextBtn.addEventListener('click', function () {
+    if (state.answers[state.index] === null) return;
+
+    if (state.index < QUESTIONS.length - 1) {
+      state.index += 1;
+      renderQuestion();
+      window.scrollTo(0, 0);
+      return;
+    }
+
+    showResult();
+  });
+
+  el.againBtn.addEventListener('click', function () {
+    state.index = 0;
+    state.answers = new Array(QUESTIONS.length).fill(null);
+    renderQuestion();
+    showScreen('quiz');
+  });
+
+  function scoreText(score) {
+    if (score === QUESTIONS.length) {
+      return { msg: '满分！安全意识非常到位', sub: '继续保持，也提醒身边同学注意防范。' };
+    }
+    if (score >= 6) {
+      return { msg: '表现不错，个别环节需留意', sub: '重点复习错题，细节往往最容易被利用。' };
+    }
+    if (score >= 4) {
+      return { msg: '基础尚可，需要加强', sub: '建议把错题再过一遍，牢记 12339 举报电话。' };
+    }
+    return { msg: '安全防范意识有待提高', sub: '认真看一遍解析，遇到可疑情况先拒绝、再举报。' };
+  }
+
+  function showResult() {
+    var score = 0;
+    var rows = [];
+
+    QUESTIONS.forEach(function (item, i) {
+      var picked = state.answers[i];
+      var correct = picked === item.answer;
+      if (correct) score += 1;
+
+      var row = document.createElement('div');
+      row.className = 'review-item' + (correct ? '' : ' wrong');
+
+      var top = document.createElement('div');
+      top.className = 'review-top';
+      top.innerHTML = '<span>第 ' + (i + 1) + ' 题</span>' +
+        '<span class="mark">' + (correct ? '✓ 答对' : '✗ 答错') + '</span>';
+
+      var q = document.createElement('p');
+      q.className = 'review-q';
+      q.textContent = item.q;
+
+      var mine = document.createElement('p');
+      mine.className = 'review-line';
+      mine.innerHTML = '你的选择：<b class="' + (correct ? 'ok' : 'bad') + '">' +
+        LETTERS[picked] + '. ' + esc(item.options[picked]) + '</b>';
+
+      row.appendChild(top);
+      row.appendChild(q);
+      row.appendChild(mine);
+
+      if (!correct) {
+        var right = document.createElement('p');
+        right.className = 'review-line';
+        right.innerHTML = '正确答案：<b class="ok">' +
+          LETTERS[item.answer] + '. ' + esc(item.options[item.answer]) + '</b>';
+        row.appendChild(right);
+      }
+
+      rows.push(row);
+    });
+
+    el.scoreNum.textContent = String(score);
+    var text = scoreText(score);
+    el.scoreMsg.textContent = text.msg;
+    el.scoreSub.textContent = text.sub;
+
+    el.review.innerHTML = '';
+    rows.forEach(function (row) { el.review.appendChild(row); });
+
+    showScreen('result');
+  }
+
+  function esc(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  el.totalNo.textContent = String(QUESTIONS.length);
+})();
+</script>
+</body>
+</html>
